@@ -1,0 +1,50 @@
+services:
+  match-matrix:
+    build:
+      context: .
+    container_name: match-matrix
+    working_dir: /app
+    volumes:
+      - .:/app
+      - /app/node_modules
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    depends_on:
+      postgres-db:
+        condition: service_healthy
+    command: sh -c "npm install && npx prisma migrate deploy && npm run dev"
+    networks:
+      - match-matrix-network
+
+  postgres-db:
+    image: postgres:17
+    container_name: postgres-db
+    ports:
+      - "5432:5432"
+    env_file:
+      - .env
+    volumes:
+      - pgdata:/var/lib/postgresql/data1
+    networks:
+      - match-matrix-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8085:8080
+    networks:
+      - match-matrix-network
+
+volumes:
+  pgdata:
+
+networks:
+  match-matrix-network:

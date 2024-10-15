@@ -1,0 +1,90 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int             @id @default(autoincrement())
+  username          String          @unique
+  password          String
+  hasRaSmorgasboard Boolean         @default(false)
+  connectedUserId   Int?            @unique
+  raSmorgasboard    RaSmorgasboard?
+  connectedUser     User?           @relation("UserConnection", fields: [connectedUserId], references: [id])
+  connectsTo        User?           @relation("UserConnection")
+}
+
+model RaSmorgasboard {
+  id                                      Int    @id @default(autoincrement())
+  userId                                  Int    @unique
+  physicalIntimacyNoTouch                 Int?
+  physicalIntimacyPlatonicTouch           Int?
+  physicalIntimacyEroticTouch             Int?
+  physicalIntimacySaferSex                Int?
+  physicalIntimacySharedFluids            Int?
+  kinkBdsm                                Int?
+  kinkPowerExchange                       Int?
+  kinkRoleplaying                         Int?
+  kinkTaboo                               Int?
+  emotionalIntimacyVenting                Int?
+  emotionalIntimacySupport                Int?
+  emotionalIntimacyLoveLanguages          Int?
+  communicationFrequencyMostDays          Int?
+  communicationFrequencyFewTimesPerWeek   Int?
+  communicationFrequencyMostWeeks         Int?
+  communicationFrequencyOnceTwicePerMonth Int?
+  communicationFrequencyMostMonths        Int?
+  communicationResponseImmediate          Int?
+  communicationResponsePriority           Int?
+  communicationResponseConsiderate        Int?
+  communicationResponseAsynchronous       Int?
+  togetherFrequencyMostDays               Int?
+  togetherFrequencyFewTimesPerWeek        Int?
+  togetherFrequencyMostWeeks              Int?
+  togetherFrequencyOnceTwicePerMonth      Int?
+  togetherFrequencyMostMonths             Int?
+  togetherQualityAdjacent                 Int?
+  togetherQualityCollaborative            Int?
+  togetherQualityFocused                  Int?
+  domesticChores                          Int?
+  domesticCooking                         Int?
+  domesticHousemates                      Int?
+  domesticRoommates                       Int?
+  relationshipPublicitySecret             Int?
+  relationshipPublicityFamily             Int?
+  relationshipPublicityCommunity          Int?
+  relationshipPublicityWork               Int?
+  relationshipPublicitySocialMedia        Int?
+  labelsFriends                           Int?
+  labelsLovers                            Int?
+  labelsPartners                          Int?
+  labelsChosenFamily                      Int?
+  lifePartnersLongTermGoals               Int?
+  lifePartnersPoliticalAlignment          Int?
+  lifePartnersEmbracingChange             Int?
+  lifePartnersEmergencyContacts           Int?
+  structureOpenNonHierarchical            Int?
+  structureOpenHierarchical               Int?
+  structureClosedExclusive                Int?
+  caregivingPlants                        Int?
+  caregivingPets                          Int?
+  caregivingChildren                      Int?
+  caregivingAdults                        Int?
+  financesSupport                         Int?
+  financesSharedExpenses                  Int?
+  financesSharedPossessions               Int?
+  financesSharedAccounts                  Int?
+  financesSharedProperty                  Int?
+  financesInheritorBeneficiary            Int?
+  legalMarriage                           Int?
+  legalAdoption                           Int?
+  legalPowerOfAttorney                    Int?
+  legalCorporateProfessional              Int?
+  relationshipWithName                    String
+  relationshipWithId                      Int?
+  user                                    User   @relation(fields: [userId], references: [id])
+}
