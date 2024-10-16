@@ -10,6 +10,9 @@ export async function GET(req: NextRequest) {
     try {
         const smorgasboard = await prisma.raSmorgasboard.findUnique({
             where: { userId: Number(userId) },
+            include: {
+                Share: true,
+            },
         });
 
         if (!smorgasboard) {

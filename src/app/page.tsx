@@ -1,13 +1,7 @@
 'use client'
 
-import { Metadata } from 'next'
-
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
-export const metadata: Metadata = {
-  title: 'MatchMatrix',
-}
 
 export default function MainPage() {
   const router = useRouter();

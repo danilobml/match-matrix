@@ -1,12 +1,12 @@
 'use client'
 
-import HomePage from "../components/HomePage"
+import Home from "../components/Home"
 import WithAuth from "../components/WithAuth"
 
-const page = () => {
+const HomePage = () => {
   return (
-    <HomePage />
+    <Home />
   )
 }
 
-export default WithAuth(page)
+export default WithAuth(HomePage)

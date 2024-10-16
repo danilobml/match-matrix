@@ -16,6 +16,18 @@ model User {
   raSmorgasboard    RaSmorgasboard?
   connectedUser     User?           @relation("UserConnection", fields: [connectedUserId], references: [id])
   connectsTo        User?           @relation("UserConnection")
+  shares            Share[]         
+  sharedWith        Share[]         @relation("SharedWith") 
+}
+
+model Share {
+  id                Int      @id @default(autoincrement())
+  userId            Int      
+  user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  raSmorgasboardId  Int?     
+  raSmorgasboard    RaSmorgasboard?  @relation(fields: [raSmorgasboardId], references: [id], onDelete: SetNull)
+  sharedWithUserId  Int?
+  sharedWith        User?     @relation("SharedWith", fields: [sharedWithUserId], references: [id])
 }
 
 model RaSmorgasboard {
@@ -87,4 +99,5 @@ model RaSmorgasboard {
   relationshipWithName                    String
   relationshipWithId                      Int?
   user                                    User   @relation(fields: [userId], references: [id])
+  Share                                   Share[]
 }
