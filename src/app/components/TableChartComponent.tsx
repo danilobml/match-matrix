@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Typography, Tooltip } from 'antd';
+
 import type { TransformedData } from '../types/smorgasboard.types';
 
 const { Title } = Typography;

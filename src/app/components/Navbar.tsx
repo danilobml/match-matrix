@@ -1,11 +1,24 @@
-'use client'
+'use client';
 
-import { Menu, Dropdown, Button, Layout, Typography } from 'antd';
-import { DownOutlined, LogoutOutlined, MenuOutlined, HomeOutlined } from '@ant-design/icons';
+import { Menu,
+  Dropdown,
+  Button,
+  Layout,
+  Typography 
+} from 'antd';
+import { 
+  DownOutlined,
+  LogoutOutlined,
+  MenuOutlined,
+  HomeOutlined,
+  UserOutlined,
+  BarChartOutlined
+} from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import Logo from '../favicon.ico';
 import Link from 'next/link';
+
+import Logo from '../favicon.ico';
 
 const { Header } = Layout;
 const { Title } = Typography;
@@ -14,18 +27,20 @@ const Navbar = () => {
   const router = useRouter();
 
   const handleLogout = async () => {
-    try {
-      sessionStorage.removeItem('RAS_USER');
-      router.push('/login');
-    } catch (error) {
-      console.error('Logout error:', error);
-    }
+    sessionStorage.removeItem('RAS_USER');
+    router.push('/login');
   };
 
   const menu = (
     <Menu>
       <Menu.Item key="home" icon={<HomeOutlined />}>
         <Link href="/home">Home</Link>
+      </Menu.Item>
+      <Menu.Item key="share" icon={<UserOutlined />}>
+        <Link href="/share">Share</Link>
+      </Menu.Item>
+      <Menu.Item key="charts" icon={<BarChartOutlined />}>
+        <Link href="/charts">Charts</Link>
       </Menu.Item>
       <Menu.Item key="logout" icon={<LogoutOutlined />} onClick={handleLogout}>
         Logout
@@ -36,7 +51,7 @@ const Navbar = () => {
   return (
     <Header className="navbar-header">
       <div className="navbar-logo-title">
-          <Image src={Logo} alt="Logo" width={40} height={40} className="navbar-logo" />
+        <Image src={Logo} alt="Logo" width={40} height={40} className="navbar-logo" />
         <Link href="/home">
           <Title level={3} className="navbar-title">
             MatchMatrix

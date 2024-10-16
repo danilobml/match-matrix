@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Radar } from '@ant-design/charts';
 import { Typography } from 'antd';
+
 import type { TransformedData } from '../types/smorgasboard.types';
 
 const { Title } = Typography;

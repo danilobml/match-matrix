@@ -1,9 +1,15 @@
 import Head from 'next/head';
 import localFont from "next/font/local";
 import { ConfigProvider } from 'antd';
+import { Metadata } from 'next'
+
 
 import "./globals.css";
 import Navbar from "./components/Navbar";
+
+export const metadata: Metadata = {
+  title: 'MatchMatrix',
+}
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",

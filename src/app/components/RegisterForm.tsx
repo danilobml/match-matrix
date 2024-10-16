@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react';
-import { Form, Input, Button, Typography, Card } from 'antd';
+import { Form, Input, Button, Typography, Card, message } from 'antd';
 import { useRouter } from 'next/navigation';
 
 const { Title } = Typography;
@@ -18,7 +18,7 @@ const RegisterForm = () => {
 
   const onFinish = async (values: RegisterFormData) => {
     if (values.password !== values.confirmPassword) {
-      console.error('Passwords do not match');
+      message.error('Registration error: check if the password and confirm password match');
       return;
     }
 
@@ -34,6 +34,7 @@ const RegisterForm = () => {
 
       const result = await response.json();
       if (response.ok) {
+        message.success('Registration successful!');
         router.push('/login');
       } else {
         console.error(result.error);
