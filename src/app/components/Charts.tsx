@@ -46,7 +46,7 @@ const Charts: React.FC = () => {
   }, []);
 
   const handleFormNavigation = () => {
-    router.push('/form?mode=add');
+    router.push('/form');
   };
 
   const handleShareNavigation = () => {
