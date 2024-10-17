@@ -10,11 +10,11 @@ COPY . .
 
 RUN npx prisma generate
 
-# Only for deployment:
-RUN npx prisma migrate deploy
-
 RUN npm run build
 
 EXPOSE 3000
 
-CMD ["npm", "run", "start"]
+#CMD ["npm", "run", "start"]
+
+# For deployment:
+CMD ["sh", "-c", "npx prisma migrate deploy && npm run start"]
