@@ -13,6 +13,7 @@ interface RadarChartComponentProps {
 const RadarChartComponent = ({ chartData }: RadarChartComponentProps) => {
   const [data, setData] = useState<{ category: string; averageValue: number | 'No answer' }[]>([]);
 
+  console.log(data)
   useEffect(() => {
     if (chartData && Array.isArray(chartData) && chartData.length > 0) {
       const categoryData = chartData.reduce(
@@ -99,15 +100,14 @@ const RadarChartComponent = ({ chartData }: RadarChartComponentProps) => {
     area: {},
   };
 
-  return (
-    <div style={{ marginTop: '40px' }}>
-      <Title level={3}>Radar Chart Visualization</Title>
-      {data.length > 0 ? (
+  return (<>
+    {data.length > 0 ? (<>
+      <div style={{ marginTop: '40px' }}>
+        <Title level={3}>Your Radar Chart Visualization</Title>
         <Radar {...config} />
-      ) : (
-        <p>Please fill out the form and submit to view the radar chart.</p>
-      )}
-    </div>
+      </div>
+    </>) : null}
+  </>
   );
 };
 

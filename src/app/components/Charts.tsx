@@ -1,33 +1,41 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Typography, Button } from 'antd';
+import { Typography, Button, Spin } from 'antd';
 import { useRouter } from 'next/navigation';
 
 import RadarChartComponent from './RadarChartComponent';
 import TableChartComponent from './TableChartComponent';
 import HeatmapComponent from './HeatmapComponent';
+import { TransformedData } from '../types/smorgasboard.types';
+import { getTransformedSmorgasboardData } from '../utils/utils';
 
 const { Title, Paragraph } = Typography;
 
-interface ChartData {
-  x: string;
-  y: string;
-  value: number;
-}
-
 const Charts: React.FC = () => {
   const router = useRouter();
-  const [hasData, setHasData] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasSharedData, setHasSharedData] = useState<boolean>(false);
-  const [heatmapData, setHeatmapData] = useState<ChartData[]>([]);
+  const [heatmapData, setHeatmapData] = useState<TransformedData[]>([]);
 
   useEffect(() => {
+    setIsLoading(true);
     const user = sessionStorage.getItem('RAS_USER');
     if (user) {
       try {
         const parsedUser = JSON.parse(user);
-        setHasData(!!parsedUser?.hasInstance);
+        if(parsedUser?.userId) {
+          console.log('get')
+          fetch(`/api/raSmorgasboard?userId=${parsedUser.userId}`)
+            .then((res) => res.json())
+            .then((result) => {
+              if (result.data) {
+                const transformedData = getTransformedSmorgasboardData(result.data)
+                setHeatmapData(transformedData);
+                setIsLoading(false);
+              }
+            });
+        }
 
         if (parsedUser?.sharedUserId) {
           fetch(`/api/share?sharedUserId=${parsedUser.sharedUserId}`)
@@ -56,18 +64,18 @@ const Charts: React.FC = () => {
   return (
     <div style={{ padding: '15px 60px' }}>
       <Title>Charts</Title>
-
-      {!hasData ? (
+      <Spin spinning={isLoading} >
+      {!heatmapData ? (
         <div>
-          <Paragraph>You haven&apos;t filled any forms yet, want to do it now?</Paragraph>
+          <Paragraph style={{ fontSize: '18px'}}>You haven&apos;t filled any forms yet, want to do it now?</Paragraph>
           <Button type="primary" onClick={handleFormNavigation}>
             RA Smorgasboard
           </Button>
         </div>
       ) : (
         <div>
-          <RadarChartComponent chartData={[]}/>
-          <TableChartComponent chartData={[]} />
+          <RadarChartComponent chartData={heatmapData}/>
+          <TableChartComponent chartData={heatmapData} />
           {!hasSharedData ? (
             <div>
               <Paragraph>You haven&apos;t yet shared your data with anyone.</Paragraph>
@@ -80,6 +88,7 @@ const Charts: React.FC = () => {
           )}
         </div>
       )}
+      </Spin>
     </div>
   );
 };

@@ -10,9 +10,9 @@ export async function GET(req: NextRequest) {
     try {
         const smorgasboard = await prisma.raSmorgasboard.findUnique({
             where: { userId: Number(userId) },
-            include: {
-                Share: true,
-            },
+            // include: {
+            //     Share: true,
+            // },
         });
 
         if (!smorgasboard) {
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
     try {
         const dataToSave = {
             relationshipWithName: relationshipWithName || "Everyone",
-            relationshipWithId: relationshipWithId || null,
+            relationshipWithId: Number(relationshipWithId) || null,
             physicalIntimacyNoTouch: data.physicalIntimacyNoTouch || null,
             physicalIntimacyPlatonicTouch: data.physicalIntimacyPlatonicTouch || null,
             physicalIntimacyEroticTouch: data.physicalIntimacyEroticTouch || null,

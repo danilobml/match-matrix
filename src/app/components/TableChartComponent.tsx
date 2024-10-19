@@ -48,9 +48,11 @@ const TableChartComponent = ({ chartData }: TableChartComponentProps) => {
     text.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase());
 
   return (
+
     <div style={{ marginTop: '40px' }}>
-      <Title level={3} style={{ color: 'black', fontWeight: 'bold' }}>RA Smorgasbord Visualization</Title>
-      {data.length > 0 ? (
+      {data.length > 0 ? (<>
+        <Title level={3} style={{ color: 'black', fontWeight: 'bold' }}>Your RA Smorgasbord Visualization</Title>
+
         <div>
           {Object.entries(
             data.reduce((acc: Record<string, TransformedData[]>, item) => {
@@ -80,8 +82,9 @@ const TableChartComponent = ({ chartData }: TableChartComponentProps) => {
             </div>
           ))}
         </div>
+      </>
       ) : (
-        <p>Please fill out the form and submit to view the chart.</p>
+        null
       )}
     </div>
   );

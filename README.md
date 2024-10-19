@@ -5,7 +5,8 @@
 # Tooling
 
 - Framework: NextJs with TypeScript
-- Database ORM: Prisma
 - CSS-UI Framework: Antdesign
+- Charts: antd-charts
+- Database ORM: Prisma
 - DB: PostgreSQL
 - Docker-compose

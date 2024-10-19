@@ -24,8 +24,8 @@ const RAForm: React.FC = () => {
     const [isShareModalVisible, setIsShareModalVisible] = useState(false);
     const [shareUserId, setShareUserId] = useState<number | null>(null);
     const [hasSavedData, setHasSavedData] = useState<boolean>(false);
-    const [isSaving, setIsSaving] = useState<boolean>(false); // Added loading state for save button
-    const [isSharing, setIsSharing] = useState<boolean>(false); // Added loading state for share button
+    const [isSaving, setIsSaving] = useState<boolean>(false);
+    const [isSharing, setIsSharing] = useState<boolean>(false);
 
     const [form] = Form.useForm();
 
@@ -98,7 +98,7 @@ const RAForm: React.FC = () => {
                 if (missing.length > 0) {
                     setGeneratePopVisible(true);
                 } else {
-                    generateHeatmap(values);
+                    generateCharts(values);
                     setShowSave(true);
                 }
             })
@@ -150,7 +150,7 @@ const RAForm: React.FC = () => {
         });
     };
 
-    const generateHeatmap = (values: RAFormValues) => {
+    const generateCharts = (values: RAFormValues) => {
         const transformedData: TransformedData[] = [];
         Object.entries(values).forEach(([section, items]) => {
             if (typeof items === 'object' && items !== null) {
@@ -190,7 +190,7 @@ const RAForm: React.FC = () => {
 
     const confirmGenerate = () => {
         const values = form.getFieldsValue();
-        generateHeatmap(values);
+        generateCharts(values);
         setGeneratePopVisible(false);
         setShowSave(true);
     };

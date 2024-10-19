@@ -1,4 +1,8 @@
-export const RASmorgasboardOptions = {
+export interface RaSmorgasboardOptions {
+  [key: string]: string[]
+}
+
+export const RASmorgasboardOptions: RaSmorgasboardOptions = {
     physicalIntimacy: ["No touch", "Platonic touch", "Erotic touch", "Safer sex", "Shared fluids"],
     kink: ["BDSM", "Power exchange", "Roleplaying", "Taboo"],
     emotionalIntimacy: ["Venting", "Support", "Attend to love languages"],
