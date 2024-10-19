@@ -28,7 +28,7 @@ const LoginForm = () => {
 
       const result = await response.json();
       if (response.ok) {
-        sessionStorage.setItem('RAS_USER', JSON.stringify({ userId: result.userId, hasInstance: result.hasInstance }));
+        sessionStorage.setItem('RAS_USER', JSON.stringify({ userId: result.userId, raSmorgasboardId: result.raSmorgasboardId }));
         router.push('/home');
       } else if (response.status === 401) {
         message.error("Invalid username or password. If you don't have one yet, please click on Register.");

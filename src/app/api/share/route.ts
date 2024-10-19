@@ -4,8 +4,17 @@ import { prisma } from '../../../../lib/prisma';
 export async function POST(req: NextRequest) {
     const { userId, sharedWithUserId, raSmorgasboardId } = await req.json();
 
-    if (!userId || !raSmorgasboardId) {
+    if (!userId || !raSmorgasboardId || !sharedWithUserId) {
         return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
+    }
+
+    try {
+        const foundUserToShare = await prisma.user.findUnique({ where: { id: sharedWithUserId } })
+        if (!foundUserToShare) {
+            return NextResponse.json({ error: 'User to share with the id given not found' }, { status: 404 });
+        }
+    } catch (error) {
+        return NextResponse.json({ error: 'Internal server error', details: error }, { status: 500 });
     }
 
     try {

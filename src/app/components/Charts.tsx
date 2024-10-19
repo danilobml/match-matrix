@@ -17,6 +17,7 @@ const Charts: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [hasSharedData, setHasSharedData] = useState<boolean>(false);
   const [heatmapData, setHeatmapData] = useState<TransformedData[]>([]);
+  const [hasData, setHasData] = useState<boolean>(false);
 
   useEffect(() => {
     setIsLoading(true);
@@ -24,8 +25,8 @@ const Charts: React.FC = () => {
     if (user) {
       try {
         const parsedUser = JSON.parse(user);
-        if(parsedUser?.userId) {
-          console.log('get')
+        if(parsedUser?.raSmorgasboardId) {
+          setHasData(true)
           fetch(`/api/raSmorgasboard?userId=${parsedUser.userId}`)
             .then((res) => res.json())
             .then((result) => {
@@ -49,6 +50,8 @@ const Charts: React.FC = () => {
         }
       } catch (error) {
         console.error('Failed to parse user session data:', error);
+      } finally {
+        setIsLoading(false);
       }
     }
   }, []);
@@ -65,7 +68,7 @@ const Charts: React.FC = () => {
     <div style={{ padding: '15px 60px' }}>
       <Title>Charts</Title>
       <Spin spinning={isLoading} >
-      {!heatmapData ? (
+      {!hasData ? (
         <div>
           <Paragraph style={{ fontSize: '18px'}}>You haven&apos;t filled any forms yet, want to do it now?</Paragraph>
           <Button type="primary" onClick={handleFormNavigation}>
@@ -78,7 +81,7 @@ const Charts: React.FC = () => {
           <TableChartComponent chartData={heatmapData} />
           {!hasSharedData ? (
             <div>
-              <Paragraph>You haven&apos;t yet shared your data with anyone.</Paragraph>
+              <Paragraph  style={{ fontSize: '18px'}}>You haven&apos;t yet shared your data with anyone.</Paragraph>
               <Button type="primary" onClick={handleShareNavigation}>
                 Share?
               </Button>

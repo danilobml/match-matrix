@@ -269,3 +269,104 @@ Object.entries(RASmorgasboardOptions).forEach(([section, items]) => {
 
 return mappedData;
 };
+
+export const getTransformedSavedToRAFormValues = (data: RaSmorgasboardData): RAFormValues => {
+  return {
+    physicalIntimacy: {
+      'No touch': data.physicalIntimacyNoTouch,
+      'Platonic touch': data.physicalIntimacyPlatonicTouch,
+      'Erotic touch': data.physicalIntimacyEroticTouch,
+      'Safer sex': data.physicalIntimacySaferSex,
+      'Shared fluids': data.physicalIntimacySharedFluids,
+    },
+    kink: {
+      BDSM: data.kinkBdsm,
+      'Power exchange': data.kinkPowerExchange,
+      Roleplaying: data.kinkRoleplaying,
+      Taboo: data.kinkTaboo,
+    },
+    emotionalIntimacy: {
+      Venting: data.emotionalIntimacyVenting,
+      Support: data.emotionalIntimacySupport,
+      'Attend to love languages': data.emotionalIntimacyLoveLanguages,
+    },
+    communicationFrequency: {
+      'Most days': data.communicationFrequencyMostDays,
+      'A few times per week': data.communicationFrequencyFewTimesPerWeek,
+      'Most weeks': data.communicationFrequencyMostWeeks,
+      '1-2 times per month': data.communicationFrequencyOnceTwicePerMonth,
+      'Most months': data.communicationFrequencyMostMonths,
+    },
+    communicationResponse: {
+      'Always immediate': data.communicationResponseImmediate,
+      'Priority response': data.communicationResponsePriority,
+      'Considerate response': data.communicationResponseConsiderate,
+      Asynchronous: data.communicationResponseAsynchronous,
+    },
+    togetherFrequency: {
+      'Most days': data.togetherFrequencyMostDays,
+      'A few times per week': data.togetherFrequencyFewTimesPerWeek,
+      'Most weeks': data.togetherFrequencyMostWeeks,
+      '1-2 times per month': data.togetherFrequencyOnceTwicePerMonth,
+      'Most months': data.togetherFrequencyMostMonths,
+    },
+    togetherQuality: {
+      Adjacent: data.togetherQualityAdjacent,
+      Collaborative: data.togetherQualityCollaborative,
+      'Focused on one another': data.togetherQualityFocused,
+    },
+    domestic: {
+      'Chores and duties': data.domesticChores,
+      'Cooking together': data.domesticCooking,
+      Housemates: data.domesticHousemates,
+      Roommates: data.domesticRoommates,
+    },
+    relationshipPublicity: {
+      Secret: data.relationshipPublicitySecret,
+      Family: data.relationshipPublicityFamily,
+      Community: data.relationshipPublicityCommunity,
+      Work: data.relationshipPublicityWork,
+      'Social media': data.relationshipPublicitySocialMedia,
+    },
+    labels: {
+      Friends: data.labelsFriends,
+      Lovers: data.labelsLovers,
+      Partners: data.labelsPartners,
+      'Chosen family': data.labelsChosenFamily,
+    },
+    lifePartners: {
+      'Long term goals': data.lifePartnersLongTermGoals,
+      'Political alignment': data.lifePartnersPoliticalAlignment,
+      'Embracing change': data.lifePartnersEmbracingChange,
+      'Emergency contacts': data.lifePartnersEmergencyContacts,
+    },
+    structure: {
+      'Open & non-hierarchical': data.structureOpenNonHierarchical,
+      'Open & hierarchical': data.structureOpenHierarchical,
+      'Closed/exclusive': data.structureClosedExclusive,
+    },
+    caregiving: {
+      Plants: data.caregivingPlants,
+      Pets: data.caregivingPets,
+      Children: data.caregivingChildren,
+      'Adults needing care': data.caregivingAdults,
+    },
+    finances: {
+      Support: data.financesSupport,
+      'Shared expenses': data.financesSharedExpenses,
+      'Shared possessions': data.financesSharedPossessions,
+      'Shared accounts': data.financesSharedAccounts,
+      'Shared property': data.financesSharedProperty,
+      'Inheritor/beneficiary': data.financesInheritorBeneficiary,
+    },
+    legal: {
+      Marriage: data.legalMarriage,
+      Adoption: data.legalAdoption,
+      'Power of attorney': data.legalPowerOfAttorney,
+      'Corporate/professional': data.legalCorporateProfessional,
+    },
+    relationshipWithName: data.relationshipWithName,
+    relationshipWithId: data.relationshipWithId ? String(data.relationshipWithId) : null,
+  };
+};
+

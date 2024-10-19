@@ -103,7 +103,7 @@ export async function POST(req: NextRequest) {
             legalCorporateProfessional: data.legalCorporateProfessional || null,
         };
 
-        await prisma.raSmorgasboard.upsert({
+        const raSmorgasboard = await prisma.raSmorgasboard.upsert({
             where: {
                 userId: Number(userId),
             },
@@ -117,7 +117,9 @@ export async function POST(req: NextRequest) {
 
         });
 
-        return NextResponse.json({ message: 'Preferences saved successfully' }, { status: 200 });
+        console.log(raSmorgasboard.id)
+
+        return NextResponse.json({ message: 'Preferences saved successfully', newRaSmorgasboardId: raSmorgasboard.id }, { status: 200 });
     } catch (error: unknown) {
         console.error('Prisma error:', JSON.stringify(error, null, 2));
         return NextResponse.json({ error: 'Internal server error', details: error }, { status: 500 });

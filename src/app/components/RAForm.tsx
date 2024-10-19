@@ -5,7 +5,7 @@ import { Form, Input, Select, Button, Typography, Switch, Popconfirm, Modal, mes
 
 import type { TransformedData, RAFormValues } from '../types/smorgasboard.types';
 import { RASmorgasboardOptions } from '../utils/constants';
-import { getCleanData } from '../utils/utils';
+import { getCleanData, getTransformedSavedToRAFormValues } from '../utils/utils';
 import RadarChartComponent from './RadarChartComponent';
 import TableChartComponent from './TableChartComponent';
 
@@ -38,15 +38,15 @@ const RAForm: React.FC = () => {
         if (user) {
             try {
                 const parsedUser = JSON.parse(user);
-                if (parsedUser?.userId) {
+                if (parsedUser?.raSmorgasboardId) {
                     const fetchData = async () => {
                         try {
                             const response = await fetch(`/api/raSmorgasboard?userId=${parsedUser.userId}`);
                             const result = await response.json();
                             if (result.data) {
-                                form.setFieldsValue(result.data);
+                                form.setFieldsValue(getTransformedSavedToRAFormValues(result.data));
                                 setHasSavedData(true);
-                                setShowSave(true); 
+                                setShowSave(true);
                             }
                         } catch (error) {
                             console.error('Failed to fetch preferences:', error);
@@ -90,7 +90,7 @@ const RAForm: React.FC = () => {
                 const allFieldsEmpty = Object.values(values).every(
                     (field) => field === undefined || field === null || field === '' || (typeof field === 'object' && Object.values(field).every(value => value === null || value === undefined))
                 );
-    
+
                 if (allFieldsEmpty) {
                     message.error('No data to chart!');
                     return;
@@ -137,12 +137,19 @@ const RAForm: React.FC = () => {
                         body: JSON.stringify(payload),
                     });
                     if (!response.ok) {
-                        throw new Error('Failed to save preferences');
+                        throw new Error('Failed to save RA Smorgasboard data');
                     }
+                    const responseData = await response.json()
+                    const user = sessionStorage.getItem('RAS_USER');
+                    const parsedUser = JSON.parse(user!);
+                    const updatedUser = { ...parsedUser, raSmorgasboardId: responseData.newRaSmorgasboardId }
+                    console.log(updatedUser)
+                    sessionStorage.setItem('RAS_USER', JSON.stringify(updatedUser))
                     setHasSavedData(true);
-                    message.success('Preferences saved successfully!');
+                    message.success('RA Smorgasboard data saved successfully!');
                 } catch (error) {
-                    console.error('Failed to save preferences:', error);
+                    console.error('Failed to save RA Smorgasboard data:', error);
+                    message.error('Failed to save RA Smorgasboard data.')
                 } finally {
                     setIsSaving(false);
                 }
@@ -201,17 +208,31 @@ const RAForm: React.FC = () => {
 
     const handleShareSubmit = async () => {
         setIsSharing(true);
-        if (!shareUserId) return;
+        const user = sessionStorage.getItem('RAS_USER');
+        const parsedUser = JSON.parse(user!);
+
+        if (!shareUserId) {
+            setIsSharing(false);
+            return;
+        }
+
+        if (shareUserId == parsedUser.userId) {
+            message.error('You are trying to share with your own user id!')
+            setIsSharing(false);
+            return
+        }
 
         try {
             const response = await fetch('/api/share', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ raSmorgasboard: sessionStorage.getItem('userId'), userId: shareUserId }),
+                body: JSON.stringify({ raSmorgasboardId: parsedUser.raSmorgasboardId, userId: parsedUser.userId, sharedWithUserId: Number(shareUserId) }),
             });
 
             if (response.ok) {
                 message.success('You have successfully shared your data, contact your partner to tell them and ask them to share theirs, so you both can visualize it!');
+            } else if (response.status === 404) {
+                message.error('User with the given Id not found.')
             } else {
                 message.error('Failed to share data.');
             }
@@ -312,7 +333,7 @@ const RAForm: React.FC = () => {
                         onCancel={() => setSavePopVisible(false)}
                     >
                         <Button type="primary" onClick={handleSaveClick} loading={isSaving} style={{ marginLeft: '10px' }}>
-                            Save Data
+                            {hasSavedData ? 'Update Data' : 'Save Data'}
                         </Button>
                     </Popconfirm>
                 )}

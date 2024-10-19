@@ -20,11 +20,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid username or password' }, { status: 401 });
     }
 
-    const hasInstance = user.raSmorgasboard !== null;
+    let raSmorgasboardId = null;
+
+    if (user.raSmorgasboard) {
+      raSmorgasboardId = user.raSmorgasboard.id
+    }
 
     return NextResponse.json({
       userId: user.id,
-      hasInstance,
+      raSmorgasboardId,
     }, { status: 200 });
   } catch (error) {
     console.error('Login error:', error);
