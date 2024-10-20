@@ -1,13 +1,16 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Form, Input, Select, Button, Typography, Switch, Popconfirm, Modal, message } from 'antd';
+import { Form, Input, Select, Button, Typography, Switch, Popconfirm, Modal, message, Spin } from 'antd';
 
 import type { TransformedData, RAFormValues } from '../types/smorgasboard.types';
 import { RASmorgasboardOptions } from '../utils/constants';
 import { getCleanData, getTransformedSavedToRAFormValues } from '../utils/utils';
 import RadarChartComponent from './RadarChartComponent';
 import TableChartComponent from './TableChartComponent';
+import { getParsedSessionUser, updateSessionUser } from '../utils/manageSessionUser';
+// Data hooks:
+import { useShareData } from '../hooks/useShareData';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -25,19 +28,18 @@ const RAForm: React.FC = () => {
     const [shareUserId, setShareUserId] = useState<number | null>(null);
     const [hasSavedData, setHasSavedData] = useState<boolean>(false);
     const [isSaving, setIsSaving] = useState<boolean>(false);
-    const [isSharing, setIsSharing] = useState<boolean>(false);
 
     const [form] = Form.useForm();
+
+    const { shareData, isLoading: isSharing } = useShareData();
 
     const handleToggleChange = (checked: boolean) => {
         setIsSpecificRelationship(checked);
     };
 
     useEffect(() => {
-        const user = sessionStorage.getItem('RAS_USER');
-        if (user) {
             try {
-                const parsedUser = JSON.parse(user);
+                const parsedUser = getParsedSessionUser();
                 if (parsedUser?.raSmorgasboardId) {
                     const fetchData = async () => {
                         try {
@@ -62,9 +64,7 @@ const RAForm: React.FC = () => {
                 console.error('Failed to parse user session data:', e);
                 setLoading(false);
             }
-        } else {
-            setLoading(false);
-        }
+
     }, [form]);
 
     const getMissingFields = (values: RAFormValues) => {
@@ -108,26 +108,16 @@ const RAForm: React.FC = () => {
     const handleSave = async () => {
         setIsSaving(true);
         form.validateFields().then(async (values) => {
-            const user = sessionStorage.getItem('RAS_USER');
-            if (!user) {
-                console.error('No user data available in session storage');
-                setIsSaving(false);
-                return;
-            }
-
-            const parsedUser = JSON.parse(user);
-            const { userId } = parsedUser;
-
+            const parsedUser = getParsedSessionUser();
+            const { userId } = parsedUser!;
             if (userId) {
                 const cleanData = getCleanData(values);
-
                 const payload = {
                     userId,
                     data: cleanData,
                     relationshipWithName: isSpecificRelationship ? values.relationshipWithName : 'Everyone',
                     relationshipWithId: isSpecificRelationship ? values.relationshipWithId || null : null,
                 };
-
                 try {
                     const response = await fetch('/api/raSmorgasboard', {
                         method: 'POST',
@@ -139,12 +129,8 @@ const RAForm: React.FC = () => {
                     if (!response.ok) {
                         throw new Error('Failed to save RA Smorgasboard data');
                     }
-                    const responseData = await response.json()
-                    const user = sessionStorage.getItem('RAS_USER');
-                    const parsedUser = JSON.parse(user!);
-                    const updatedUser = { ...parsedUser, raSmorgasboardId: responseData.newRaSmorgasboardId }
-                    console.log(updatedUser)
-                    sessionStorage.setItem('RAS_USER', JSON.stringify(updatedUser))
+                    const responseData = await response.json();
+                    updateSessionUser({raSmorgasboardId: responseData.raSmorgasboardId})
                     setHasSavedData(true);
                     message.success('RA Smorgasboard data saved successfully!');
                 } catch (error) {
@@ -207,45 +193,15 @@ const RAForm: React.FC = () => {
     };
 
     const handleShareSubmit = async () => {
-        setIsSharing(true);
-        const user = sessionStorage.getItem('RAS_USER');
-        const parsedUser = JSON.parse(user!);
-
-        if (!shareUserId) {
-            setIsSharing(false);
-            return;
-        }
-
-        if (shareUserId == parsedUser.userId) {
-            message.error('You are trying to share with your own user id!')
-            setIsSharing(false);
-            return
-        }
-
-        try {
-            const response = await fetch('/api/share', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ raSmorgasboardId: parsedUser.raSmorgasboardId, userId: parsedUser.userId, sharedWithUserId: Number(shareUserId) }),
-            });
-
-            if (response.ok) {
-                message.success('You have successfully shared your data, contact your partner to tell them and ask them to share theirs, so you both can visualize it!');
-            } else if (response.status === 404) {
-                message.error('User with the given Id not found.')
-            } else {
-                message.error('Failed to share data.');
-            }
-        } catch {
-            message.error('An error occurred.');
-        } finally {
-            setIsSharing(false);
-            setIsShareModalVisible(false);
-        }
-    };
+        shareData(shareUserId!)
+    }
 
     if (loading) {
-        return <p>Loading...</p>;
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+              <Spin size="large" />
+            </div>
+          );
     }
 
     return (
@@ -308,7 +264,7 @@ const RAForm: React.FC = () => {
                             <p>Proceed anyway?</p>
                         </>
                     }
-                    visible={generatePopVisible}
+                    open={generatePopVisible}
                     onConfirm={confirmGenerate}
                     onCancel={() => setGeneratePopVisible(false)}
                 >
@@ -328,7 +284,7 @@ const RAForm: React.FC = () => {
                                 <p>Proceed anyway?</p>
                             </>
                         }
-                        visible={savePopVisible}
+                        open={savePopVisible}
                         onConfirm={confirmSave}
                         onCancel={() => setSavePopVisible(false)}
                     >
@@ -344,7 +300,7 @@ const RAForm: React.FC = () => {
                     </Button>
                 )}
 
-                <Modal title="Share your data" visible={isShareModalVisible} onOk={handleShareSubmit} onCancel={() => setIsShareModalVisible(false)}>
+                <Modal title="Share your data" open={isShareModalVisible} onOk={handleShareSubmit} onCancel={() => setIsShareModalVisible(false)}>
                     <Input value={shareUserId || ''} onChange={(e) => setShareUserId(Number(e.target.value))} placeholder="Insert User ID" />
                 </Modal>
             </Form>

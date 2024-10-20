@@ -10,9 +10,9 @@ export async function GET(req: NextRequest) {
     try {
         const smorgasboard = await prisma.raSmorgasboard.findUnique({
             where: { userId: Number(userId) },
-            // include: {
-            //     Share: true,
-            // },
+            include: {
+                Share: true,
+            },
         });
 
         if (!smorgasboard) {
@@ -117,9 +117,7 @@ export async function POST(req: NextRequest) {
 
         });
 
-        console.log(raSmorgasboard.id)
-
-        return NextResponse.json({ message: 'Preferences saved successfully', newRaSmorgasboardId: raSmorgasboard.id }, { status: 200 });
+        return NextResponse.json({ message: 'Preferences saved successfully', raSmorgasboardId: raSmorgasboard.id }, { status: 200 });
     } catch (error: unknown) {
         console.error('Prisma error:', JSON.stringify(error, null, 2));
         return NextResponse.json({ error: 'Internal server error', details: error }, { status: 500 });

@@ -22,12 +22,14 @@ model User {
 
 model Share {
   id                Int      @id @default(autoincrement())
-  userId            Int      
+  userId            Int
   user              User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  raSmorgasboardId  Int?     
+  raSmorgasboardId  Int?
   raSmorgasboard    RaSmorgasboard?  @relation(fields: [raSmorgasboardId], references: [id], onDelete: SetNull)
   sharedWithUserId  Int?
   sharedWith        User?     @relation("SharedWith", fields: [sharedWithUserId], references: [id])
+
+  @@unique([userId, sharedWithUserId])
 }
 
 model RaSmorgasboard {

@@ -21,15 +21,34 @@ export async function POST(req: NextRequest) {
     }
 
     let raSmorgasboardId = null;
+    let sharedRaSmorgasboardId = null;
 
     if (user.raSmorgasboard) {
-      raSmorgasboardId = user.raSmorgasboard.id
+      raSmorgasboardId = user.raSmorgasboard.id;
+
+      // Check if someone has shared their RaSmorgasboard with the user
+      const shareInstance = await prisma.share.findFirst({
+        where: {
+          sharedWithUserId: user.id,
+          raSmorgasboardId: { not: null },
+        },
+        include: {
+          user: true, 
+          raSmorgasboard: true,
+        },
+      });
+
+      if (shareInstance && shareInstance.raSmorgasboard) {
+        sharedRaSmorgasboardId = shareInstance.raSmorgasboard.id;
+      }
     }
 
     return NextResponse.json({
       userId: user.id,
       raSmorgasboardId,
+      sharedRaSmorgasboardId,
     }, { status: 200 });
+
   } catch (error) {
     console.error('Login error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

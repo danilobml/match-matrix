@@ -1,11 +1,13 @@
 import { Typography, Button } from 'antd';
 import { useRouter } from 'next/navigation';
+import { getParsedSessionUser } from '../utils/manageSessionUser';
 
 const { Title, Paragraph } = Typography;
 
 const Home: React.FC = () => {
   const router = useRouter();
 
+  const user = getParsedSessionUser();
 
   return (
     <div style={{ padding: '15px 60px' }}>
@@ -28,14 +30,25 @@ const Home: React.FC = () => {
         Go to Form!
       </Button>
 
-      <Button
-        type="primary"
-        size="large"
-        onClick={() => router.push('/share')}
-        style={{ marginTop: '20px', marginLeft: '10px' }}
+      {user?.raSmorgasboardId ? (
+        <Button
+          type="primary"
+          size="large"
+          onClick={() => router.push('/share')}
+          style={{ marginTop: '20px', marginLeft: '10px' }}
       >
         Share your Data!
-      </Button>
+      </Button>) : null}
+
+      {user?.raSmorgasboardId ? (
+        <Button
+          type="primary"
+          size="large"
+          onClick={() => router.push('/charts')}
+          style={{ marginTop: '20px', marginLeft: '10px' }}
+      >
+        {user.sharedRaSmorgasboardId ? "Check out your shared charts!" : "Check out your charts!"}
+      </Button>) : null}
 
       <Title style={{ marginTop: 40 }}>More to come in V0.2.1:</Title>
       <Paragraph style={{ fontSize: '22px' }}>. More Charts;</Paragraph>
