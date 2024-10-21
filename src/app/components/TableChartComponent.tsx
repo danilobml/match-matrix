@@ -7,9 +7,10 @@ const { Title } = Typography;
 
 interface TableChartComponentProps {
   chartData: TransformedData[];
+  person: 'you' | 'share'
 }
 
-const TableChartComponent = ({ chartData }: TableChartComponentProps) => {
+const TableChartComponent = ({ chartData, person }: TableChartComponentProps) => {
   const [data, setData] = useState<TransformedData[]>([]);
 
   useEffect(() => {
@@ -51,7 +52,7 @@ const TableChartComponent = ({ chartData }: TableChartComponentProps) => {
 
     <div style={{ marginTop: '40px' }}>
       {data.length > 0 ? (<>
-        <Title level={3} style={{ color: 'black', fontWeight: 'bold' }}>Your RA Smorgasbord Visualization</Title>
+        <Title level={3} style={{ color: 'black' }}>{`${person === "you"? "Your" : "Your partner's"} RA Smorgasbord Visualization`}</Title>
 
         <div>
           {Object.entries(

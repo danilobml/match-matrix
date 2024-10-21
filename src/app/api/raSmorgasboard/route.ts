@@ -3,17 +3,30 @@ import { prisma } from '../../../../lib/prisma';
 
 export async function GET(req: NextRequest) {
     const userId = req.nextUrl.searchParams.get('userId');
-    if (!userId) {
-        return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+    const smorgasboardId = req.nextUrl.searchParams.get('smorgasboardId');
+    
+    if (!userId && !smorgasboardId) {
+        return NextResponse.json({ error: 'Missing userId or smorgasboardId' }, { status: 400 });
     }
 
     try {
-        const smorgasboard = await prisma.raSmorgasboard.findUnique({
-            where: { userId: Number(userId) },
-            include: {
-                Share: true,
-            },
-        });
+        let smorgasboard;
+        
+        if (userId) {
+            smorgasboard = await prisma.raSmorgasboard.findUnique({
+                where: { userId: Number(userId) },
+                include: {
+                    Share: true,
+                },
+            });
+        } else if (smorgasboardId) {
+            smorgasboard = await prisma.raSmorgasboard.findUnique({
+                where: { id: Number(smorgasboardId) },
+                include: {
+                    Share: true,
+                },
+            });
+        }
 
         if (!smorgasboard) {
             return NextResponse.json({ error: 'Smorgasboard Data not found' }, { status: 404 });

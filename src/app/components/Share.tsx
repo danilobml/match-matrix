@@ -25,7 +25,12 @@ const Share = () => {
     }, []);
 
     const handleShare = async () => {
-        shareData(shareUserId);
+        const shareUserIdNumber = Number(shareUserId);
+        if (isNaN(shareUserIdNumber)) {
+            message.error('Invalid user ID. Please enter a valid number.');
+            return;
+        }
+        shareData(shareUserIdNumber);
     };
 
     return (

@@ -8,9 +8,10 @@ import { RASmorgasboardOptions } from '../utils/constants';
 import { getCleanData, getTransformedSavedToRAFormValues } from '../utils/utils';
 import RadarChartComponent from './RadarChartComponent';
 import TableChartComponent from './TableChartComponent';
-import { getParsedSessionUser, updateSessionUser } from '../utils/manageSessionUser';
+import { getParsedSessionUser } from '../utils/manageSessionUser';
 // Data hooks:
 import { useShareData } from '../hooks/useShareData';
+import InsightsComponent from './InsightsComponent';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -130,7 +131,7 @@ const RAForm: React.FC = () => {
                         throw new Error('Failed to save RA Smorgasboard data');
                     }
                     const responseData = await response.json();
-                    updateSessionUser({raSmorgasboardId: responseData.raSmorgasboardId})
+                    sessionStorage.setItem('RAS_USER', JSON.stringify({...parsedUser, raSmorgasboardId: responseData.raSmorgasboardId}));
                     setHasSavedData(true);
                     message.success('RA Smorgasboard data saved successfully!');
                 } catch (error) {
@@ -305,8 +306,9 @@ const RAForm: React.FC = () => {
                 </Modal>
             </Form>
 
-            {chartData.length > 0 && <TableChartComponent chartData={chartData} />}
-            {chartData.length > 0 && <RadarChartComponent chartData={chartData} />}
+            {chartData.length > 0 && <TableChartComponent chartData={chartData} person="you" />}
+            {chartData.length > 0 && <RadarChartComponent chartData={chartData} person="you" />}
+            {chartData.length > 0 && <InsightsComponent chartData={chartData} person="you" />}
         </div>
     );
 };

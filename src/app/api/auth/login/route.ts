@@ -8,7 +8,7 @@ export async function POST(req: NextRequest) {
   try {
     const user = await prisma.user.findUnique({
       where: { username },
-      include: { raSmorgasboard: true },
+      include: { raSmorgasboard: true, shares: true }
     });
 
     if (!user) {
@@ -22,12 +22,16 @@ export async function POST(req: NextRequest) {
 
     let raSmorgasboardId = null;
     let sharedRaSmorgasboardId = null;
+    let shared = false;
 
     if (user.raSmorgasboard) {
       raSmorgasboardId = user.raSmorgasboard.id;
 
+      // check if user has shared
+      shared = !!user.shares
+
       // Check if someone has shared their RaSmorgasboard with the user
-      const shareInstance = await prisma.share.findFirst({
+      const shareInstanceBoth = await prisma.share.findFirst({
         where: {
           sharedWithUserId: user.id,
           raSmorgasboardId: { not: null },
@@ -38,8 +42,8 @@ export async function POST(req: NextRequest) {
         },
       });
 
-      if (shareInstance && shareInstance.raSmorgasboard) {
-        sharedRaSmorgasboardId = shareInstance.raSmorgasboard.id;
+      if (shareInstanceBoth && shareInstanceBoth.raSmorgasboard) {
+        sharedRaSmorgasboardId = shareInstanceBoth.raSmorgasboard.id;
       }
     }
 
@@ -47,6 +51,7 @@ export async function POST(req: NextRequest) {
       userId: user.id,
       raSmorgasboardId,
       sharedRaSmorgasboardId,
+      shared
     }, { status: 200 });
 
   } catch (error) {

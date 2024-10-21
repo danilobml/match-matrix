@@ -15,6 +15,6 @@ export const getParsedSessionUser = (): User | null => {
 
 export const updateSessionUser = (dataToUpdate: DataToUpdate): void => {
     const user = getParsedSessionUser();
-    const updatedUser = { ...user, dataToUpdate }
+    const updatedUser = { ...user, ...dataToUpdate }
     sessionStorage.setItem('RAS_USER', JSON.stringify(updatedUser));
 }

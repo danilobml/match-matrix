@@ -1,10 +1,13 @@
-'use client'
+'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Form, Input, Button, Typography, Card, message } from 'antd';
 import { useRouter } from 'next/navigation';
 
-const { Title } = Typography;
+import Logo from '../favicon.ico';
+
+const { Title, Text } = Typography;
 
 interface LoginData {
   username: string;
@@ -28,7 +31,8 @@ const LoginForm = () => {
 
       const result = await response.json();
       if (response.ok) {
-        sessionStorage.setItem('RAS_USER', JSON.stringify({ userId: result.userId, raSmorgasboardId: result.raSmorgasboardId }));
+        sessionStorage.setItem('RAS_USER', JSON.stringify({ userId: result.userId, raSmorgasboardId: result.raSmorgasboardId, sharedRaSmorgasboardId: result.sharedRaSmorgasboardId,
+          shared: result.shared }));
         router.push('/home');
       } else if (response.status === 401) {
         message.error("Invalid username or password. If you don't have one yet, please click on Register.");
@@ -48,8 +52,12 @@ const LoginForm = () => {
 
   return (
     <div className="login-container">
-      <Card className="login-card">
-        <Title level={2}>Login</Title>
+      <Card className="login-card" style={{ textAlign: 'center' }}>
+        <Image src={Logo} alt="logo" width={60} height={60} />
+        <Text strong style={{ display: 'block', fontSize: '20px', marginTop: 0 }}>
+          MatchMatrix
+        </Text>
+        <Title level={2} style={{ marginTop: '8px' }}>Login</Title>
         <Form onFinish={onFinish} layout="vertical">
           <Form.Item name="username" label="Username" rules={[{ required: true }]}>
             <Input />

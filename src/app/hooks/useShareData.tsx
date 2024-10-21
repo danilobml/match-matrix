@@ -9,8 +9,9 @@ export const useShareData = () => {
         setIsLoading(true);
 
         const parsedUser = getParsedSessionUser();
-        
+
         if (!shareUserId) {
+            message.error('No user to share given!');
             setIsLoading(false);
             return;
         }
@@ -26,14 +27,18 @@ export const useShareData = () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    raSmorgasboardId: parsedUser!.raSmorgasboardId,
+                    raSmorgasboardId: getParsedSessionUser()!.raSmorgasboardId,
                     userId: parsedUser!.userId,
-                    sharedWithUserId: Number(shareUserId)
+                    sharedWithUserId: shareUserId
                 }),
             });
 
             if (response.ok) {
                 message.success('You have successfully shared your data, contact your partner to tell them and ask them to share theirs, so you both can visualize it!');
+                const user = getParsedSessionUser();
+                const responseData = await response.json()
+                const updatedUser = { ...user, shared: true, sharedRaSmorgasboardId: responseData.sharedRaSmorgasboardId || null }
+                sessionStorage.setItem('RAS_USER', JSON.stringify(updatedUser))
             } else if (response.status === 404) {
                 message.error('User with the given Id not found.');
             } else {

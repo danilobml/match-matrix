@@ -26,6 +26,8 @@ export async function POST(req: NextRequest) {
 
         const result = await prisma.share.upsert({
             where: {
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore: Suppressing the TypeScript for this Prisma query -> compound unique
                 userId_sharedWithUserId: { userId, sharedWithUserId },
             },
             create: {

@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 
 import RadarChartComponent from './RadarChartComponent';
 import TableChartComponent from './TableChartComponent';
+import InsightsComponent from './InsightsComponent';
 import HeatmapComponent from './HeatmapComponent';
 import { TransformedData } from '../types/smorgasboard.types';
 import { getTransformedSmorgasboardData } from '../utils/utils';
@@ -20,6 +21,10 @@ const Charts: React.FC = () => {
   const [chartsData, setChartsData] = useState<TransformedData[]>([]);
   const [sharedChartsData, setSharedChartsData] = useState<TransformedData[]>([]);
   const [hasData, setHasData] = useState<boolean>(false);
+  const [showYours, setShowYours] = useState<boolean>(false);
+  const [showShared, setShowShared] = useState<boolean>(false);
+  const [showHeatmap, setShowHeatmap] = useState<boolean>(false);
+
 
   useEffect(() => {
     setIsLoading(true);
@@ -37,15 +42,18 @@ const Charts: React.FC = () => {
             }
           });
       }
+      
+      if (parsedUser?.shared) {
+        setHasSharedData(true);
+      }
 
       if (parsedUser?.sharedRaSmorgasboardId) {
-        fetch(`/api/raSmorgasboard?userId=${parsedUser.sharedRaSmorgasboardId}`)
+        fetch(`/api/raSmorgasboard?smorgasboardId=${parsedUser.sharedRaSmorgasboardId}`)
           .then((res) => res.json())
           .then((result) => {
             if (result.data) {
               const transformedSharedData = getTransformedSmorgasboardData(result.data);
               setSharedChartsData(transformedSharedData);
-              setHasSharedData(true);
             }
           });
       }
@@ -78,18 +86,49 @@ const Charts: React.FC = () => {
           </div>
         ) : (
           <div>
-            <RadarChartComponent chartData={chartsData} />
-            <TableChartComponent chartData={chartsData} />
-            {!hasSharedData ? (
+            <Button onClick={() => setShowYours(!showYours)}>{showYours ? 'Hide your data' : 'Show your data'}</Button>
+            {showYours ? (
+              <>
+                <RadarChartComponent chartData={chartsData} person='you' />
+                <TableChartComponent chartData={chartsData} person='you' />
+                <InsightsComponent chartData={chartsData} person='you' />
+              </>) : null}
+            {(!hasSharedData && !isLoading) ? (
               <div>
-                <Paragraph style={{ fontSize: '18px' }}>You haven&apos;t yet shared your data with anyone.</Paragraph>
+                <Title level={2}>Shared status:</Title>
+                <Paragraph style={{ fontSize: '20px' }}>You haven&apos;t yet shared your data with anyone.</Paragraph>
                 <Button type="primary" onClick={handleShareNavigation}>
                   Share?
                 </Button>
               </div>
-            ) : (
+            ) : null}
+            {(hasSharedData && !sharedChartsData.length && !isLoading) ? (
+              <div>
+                <Title level={2}>Shared status:</Title>
+                <Paragraph style={{ fontSize: '18px' }}>You have already shared your data, but your partner hasn&apos;t yet returned the favor. Please contact them, so they can share theirs with you as well, and you can both visualize each other&apos;s data.</Paragraph>
+              </div>
+            ) : null}
+            {sharedChartsData.length ? (
+              <>
+                <br />
+                <Button style={{ marginTop: '10px'}} onClick={() => setShowShared(!showShared)}>{showShared ? 'Hide partner\'s data' : 'Show partner\'s data'}</Button>
+              </>
+            ) : null}
+            {(sharedChartsData.length && showShared) ? (
+              <>
+                <RadarChartComponent chartData={chartsData} person='share' />
+                <TableChartComponent chartData={chartsData} person='share' />
+                <InsightsComponent chartData={chartsData} person='share' />
+              </>) : null}
+            {sharedChartsData.length ? (
+              <>
+                <br />
+                <Button style={{ marginTop: '10px'}} onClick={() => setShowHeatmap(!showHeatmap)}>{showHeatmap ? 'Hide comparative heatmap' : 'Show comparative heatmap'}</Button>
+              </>
+            ) : null}
+            {(sharedChartsData.length && showHeatmap) ? (
               <HeatmapComponent userData={chartsData} sharedUserData={sharedChartsData} />
-            )}
+            ) : null}
           </div>
         )}
       </Spin>
