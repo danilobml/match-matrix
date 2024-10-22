@@ -72,7 +72,7 @@ const Charts: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: '15px 60px' }}>
+    <div style={{ padding: '15px 30px' }}>
       <Title>Charts</Title>
       <Spin spinning={isLoading}>
         {!hasData ? (
@@ -84,6 +84,7 @@ const Charts: React.FC = () => {
           </div>
         ) : (
           <div>
+            <Title level={3}>R.A. Smorgasboard:</Title>
             <Button onClick={() => setShowYours(!showYours)}>{showYours ? 'Hide your data' : 'Show your data'}</Button>
             {showYours ? (
               <>

@@ -12,6 +12,20 @@ interface RadarChartComponentProps {
 
 const RadarChartComponent = ({ chartData, person }: RadarChartComponentProps) => {
   const [data, setData] = useState<{ category: string; averageValue: number }[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     if (chartData && chartData.length > 0) {
@@ -64,7 +78,7 @@ const RadarChartComponent = ({ chartData, person }: RadarChartComponentProps) =>
         title: false,
         grid: true,
         style: {
-          labelFontSize: 9,
+          labelFontSize: isMobile ? 6 : 9,
         },
       },
       y: {
@@ -78,7 +92,7 @@ const RadarChartComponent = ({ chartData, person }: RadarChartComponentProps) =>
     <>
       {data.length > 0 ? (
         <div style={{ marginTop: '40px' }}>
-          <Title level={3}>{`${person === 'you' ? 'Your' : "Your partner's"} Radar Chart Visualization`}</Title>
+          <Title level={isMobile ? 4 : 3}>{`${person === 'you' ? 'Your' : "Your partner's"} Radar Chart Visualization`}</Title>
           <Radar {...config} />
         </div>
       ) : null}
