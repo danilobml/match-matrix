@@ -2,6 +2,8 @@
 
 # A relationship preferences matching app, with graphs. 
 
+# Version: 0.1.2
+
 # Tooling
 
 - Framework: NextJs with TypeScript
