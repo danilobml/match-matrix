@@ -1,3 +1,4 @@
+/* Variables */
 :root {
   --deep-red: #b83347;
   --slightly-lighter-red: #ba3647;
@@ -6,8 +7,15 @@
   --red-tone-with-pink: #c03e4c;
 }
 
+/* Main content styles */
 .body {
   padding: 50px;
+}
+
+.main-content {
+  background-color: #fffafb;
+  padding: 20px;
+  min-height: 100vh;
 }
 
 /* Navbar styles */
@@ -39,14 +47,7 @@
   border: none;
 }
 
-/* Main content styles */
-.main-content {
-  background-color: #fffafb;
-  padding: 20px;
-  min-height: 100vh;
-}
-
-/* Login form container */
+/* Containers */
 .login-container {
   display: flex;
   justify-content: center;
@@ -55,7 +56,7 @@
   margin-top: 30px;
 }
 
-/* Login card */
+/* Cards */
 .login-card {
   width: 100%;
   max-width: 500px;
@@ -65,6 +66,15 @@
   border-radius: 8px;
 }
 
+.share-card {
+  padding: 20px;
+  padding-top: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  margin-top: -150px;
+}
+
+/* Media queries */
 @media (max-width: 768px) {
   .menu-text {
     display: none !important;
@@ -89,14 +99,14 @@
   .register-container {
     height: 95vh;
   }
-}
 
-.share-card {
-  padding: 20px;
-  padding-top: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 8px;
-  margin-top: -150px;
+  .main-content {
+    padding: 0px;
+  }
+
+  .body {
+    padding: 0px;
+  }
 }
 
 @media (min-width: 769px) {
