@@ -1,10 +1,10 @@
-## Match Matrix
+# Match Matrix
 
-# A relationship preferences matching app, with graphs. 
+## A relationship preferences matching app, with graphs. 
 
-# Version: 0.1.2
+### Version: 0.1.2
 
-# Tooling
+## Tooling
 
 - Framework: NextJs with TypeScript
 - CSS-UI Framework: Antdesign
@@ -13,5 +13,5 @@
 - DB: PostgreSQL
 - Docker-compose
 
-# Live site:
+## Live site:
 https://match-matrix.onrender.com
