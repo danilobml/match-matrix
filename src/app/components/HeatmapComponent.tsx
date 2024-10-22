@@ -16,15 +16,18 @@ interface HeatmapComponentProps {
 const HEATMAP_COLORS = ['#ff0000', '#ff6600', '#ffff00', '#008000', '#00008b', '#000000'];
 
 const calculateHeatmapData = (userData: HeatmapData[], sharedUserData: HeatmapData[]) => {
-  return userData.map((userItem) => {
-    const sharedItem = sharedUserData.find((item) => item.y === userItem.y);
+  const allItems = Array.from(new Set([...userData.map(item => item.y), ...sharedUserData.map(item => item.y)]));
+
+  return allItems.map((item) => {
+    const userItem = userData.find((data) => data.y === item);
+    const sharedItem = sharedUserData.find((data) => data.y === item);
 
     return {
       x: 'You vs Partner',
-      y: userItem.y,
-      userValue: userItem.value,
+      y: item,
+      userValue: userItem ? userItem.value : 0,
       sharedValue: sharedItem ? sharedItem.value : 0,
-      difference: sharedItem ? Math.abs(userItem.value - sharedItem.value) : 5,
+      difference: userItem && sharedItem ? Math.abs(userItem.value - sharedItem.value) : 5,
     };
   });
 };
@@ -45,11 +48,7 @@ const HeatmapComponent: React.FC<HeatmapComponentProps> = ({ userData, sharedUse
       difference: { min: 0, max: 5 },
     },
     tooltip: {
-      formatter: (data: { y: string; userValue: number; sharedValue: number }) => ({
-        title: data.y,
-        name: 'Value',
-        value: `You: ${data.userValue}, Partner: ${data.sharedValue}`,
-      }),
+      field: 'difference'
     },
     heatmapStyle: {
       radius: 0,

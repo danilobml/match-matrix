@@ -14,7 +14,7 @@ const RadarChartComponent = ({ chartData, person }: RadarChartComponentProps) =>
   const [data, setData] = useState<{ category: string; averageValue: number }[]>([]);
 
   useEffect(() => {
-    if (chartData && Array.isArray(chartData) && chartData.length > 0) {
+    if (chartData && chartData.length > 0) {
       const categoryData = chartData.reduce(
         (acc: Record<string, { total: number; count: number }>, item) => {
           if (!acc[item.x]) {
@@ -45,15 +45,33 @@ const RadarChartComponent = ({ chartData, person }: RadarChartComponentProps) =>
     data,
     xField: 'category',
     yField: 'averageValue',
-    point: {
-      size: 2,
-    },
-    area: {},
-    legend: {
+    area: {
       style: {
-        fontSize: '5px'
-      }
-    }
+        fillOpacity: 0.2,
+      },
+    },
+    scale: {
+      x: {
+        padding: 0.5,
+        align: 0,
+      },
+      y: {
+        nice: true,
+      },
+    },
+    axis: {
+      x: {
+        title: false,
+        grid: true,
+        style: {
+          labelFontSize: 9,
+        },
+      },
+      y: {
+        label: true,
+        title: false,
+      },
+    },
   };
 
   return (

@@ -25,7 +25,6 @@ const Charts: React.FC = () => {
   const [showShared, setShowShared] = useState<boolean>(false);
   const [showHeatmap, setShowHeatmap] = useState<boolean>(false);
 
-
   useEffect(() => {
     setIsLoading(true);
     try {
@@ -42,7 +41,7 @@ const Charts: React.FC = () => {
             }
           });
       }
-      
+
       if (parsedUser?.shared) {
         setHasSharedData(true);
       }
@@ -63,7 +62,6 @@ const Charts: React.FC = () => {
       setIsLoading(false);
     }
   }, []);
-
 
   const handleFormNavigation = () => {
     router.push('/form');
@@ -92,20 +90,20 @@ const Charts: React.FC = () => {
                 <RadarChartComponent chartData={chartsData} person='you' />
                 <TableChartComponent chartData={chartsData} person='you' />
                 <InsightsComponent chartData={chartsData} person='you' />
-              </>) : null}
-            {(!hasSharedData && !isLoading) ? (
+              </>
+            ) : null}
+            {(hasSharedData && !sharedChartsData.length && !isLoading) ? (
+              <div>
+                <Title level={2}>Shared status:</Title>
+                <Paragraph style={{ fontSize: '18px' }}>You have already shared your data, but your partner hasn&apos;t yet returned the favor. Please contact them, so they can share theirs with you as well, and you can both visualize each other&apos;s data.</Paragraph>
+              </div>
+            ) : (chartsData.length && !sharedChartsData.length && !isLoading) ? (
               <div>
                 <Title level={2}>Shared status:</Title>
                 <Paragraph style={{ fontSize: '20px' }}>You haven&apos;t yet shared your data with anyone.</Paragraph>
                 <Button type="primary" onClick={handleShareNavigation}>
                   Share?
                 </Button>
-              </div>
-            ) : null}
-            {(hasSharedData && !sharedChartsData.length && !isLoading) ? (
-              <div>
-                <Title level={2}>Shared status:</Title>
-                <Paragraph style={{ fontSize: '18px' }}>You have already shared your data, but your partner hasn&apos;t yet returned the favor. Please contact them, so they can share theirs with you as well, and you can both visualize each other&apos;s data.</Paragraph>
               </div>
             ) : null}
             {sharedChartsData.length ? (
@@ -116,10 +114,11 @@ const Charts: React.FC = () => {
             ) : null}
             {(sharedChartsData.length && showShared) ? (
               <>
-                <RadarChartComponent chartData={chartsData} person='share' />
-                <TableChartComponent chartData={chartsData} person='share' />
-                <InsightsComponent chartData={chartsData} person='share' />
-              </>) : null}
+                <RadarChartComponent chartData={sharedChartsData} person='share' />
+                <TableChartComponent chartData={sharedChartsData} person='share' />
+                <InsightsComponent chartData={sharedChartsData} person='share' />
+              </>
+            ) : null}
             {sharedChartsData.length ? (
               <>
                 <br />
