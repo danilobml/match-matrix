@@ -28,6 +28,8 @@ model Share {
   raSmorgasboard    RaSmorgasboard?  @relation(fields: [raSmorgasboardId], references: [id], onDelete: SetNull)
   sharedWithUserId  Int?
   sharedWith        User?     @relation("SharedWith", fields: [sharedWithUserId], references: [id])
+
+  @@unique([userId, sharedWithUserId])
 }
 
 model RaSmorgasboard {

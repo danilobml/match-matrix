@@ -3,17 +3,30 @@ import { prisma } from '../../../../lib/prisma';
 
 export async function GET(req: NextRequest) {
     const userId = req.nextUrl.searchParams.get('userId');
-    if (!userId) {
-        return NextResponse.json({ error: 'Missing userId' }, { status: 400 });
+    const smorgasboardId = req.nextUrl.searchParams.get('smorgasboardId');
+    
+    if (!userId && !smorgasboardId) {
+        return NextResponse.json({ error: 'Missing userId or smorgasboardId' }, { status: 400 });
     }
 
     try {
-        const smorgasboard = await prisma.raSmorgasboard.findUnique({
-            where: { userId: Number(userId) },
-            include: {
-                Share: true,
-            },
-        });
+        let smorgasboard;
+        
+        if (userId) {
+            smorgasboard = await prisma.raSmorgasboard.findUnique({
+                where: { userId: Number(userId) },
+                include: {
+                    Share: true,
+                },
+            });
+        } else if (smorgasboardId) {
+            smorgasboard = await prisma.raSmorgasboard.findUnique({
+                where: { id: Number(smorgasboardId) },
+                include: {
+                    Share: true,
+                },
+            });
+        }
 
         if (!smorgasboard) {
             return NextResponse.json({ error: 'Smorgasboard Data not found' }, { status: 404 });
@@ -37,7 +50,7 @@ export async function POST(req: NextRequest) {
     try {
         const dataToSave = {
             relationshipWithName: relationshipWithName || "Everyone",
-            relationshipWithId: relationshipWithId || null,
+            relationshipWithId: Number(relationshipWithId) || null,
             physicalIntimacyNoTouch: data.physicalIntimacyNoTouch || null,
             physicalIntimacyPlatonicTouch: data.physicalIntimacyPlatonicTouch || null,
             physicalIntimacyEroticTouch: data.physicalIntimacyEroticTouch || null,
@@ -103,7 +116,7 @@ export async function POST(req: NextRequest) {
             legalCorporateProfessional: data.legalCorporateProfessional || null,
         };
 
-        await prisma.raSmorgasboard.upsert({
+        const raSmorgasboard = await prisma.raSmorgasboard.upsert({
             where: {
                 userId: Number(userId),
             },
@@ -117,7 +130,7 @@ export async function POST(req: NextRequest) {
 
         });
 
-        return NextResponse.json({ message: 'Preferences saved successfully' }, { status: 200 });
+        return NextResponse.json({ message: 'Preferences saved successfully', raSmorgasboardId: raSmorgasboard.id }, { status: 200 });
     } catch (error: unknown) {
         console.error('Prisma error:', JSON.stringify(error, null, 2));
         return NextResponse.json({ error: 'Internal server error', details: error }, { status: 500 });

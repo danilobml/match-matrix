@@ -1,26 +1,39 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { useEffect, ComponentType } from 'react';
+import { useEffect, useState, ComponentType } from 'react';
+import { Spin } from 'antd';
 
 const WithAuth = <P extends object>(WrappedComponent: ComponentType<P>) => {
-  const WithAuthComponent = (props: P) => {
+  const AuthenticatedComponent = (props: P) => {
     const router = useRouter();
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
       const user = sessionStorage.getItem('RAS_USER');
-
       if (!user) {
         router.push('/login');
+      } else {
+        setIsAuthenticated(true);
       }
+      setIsLoading(false);
     }, [router]);
 
-    return <WrappedComponent {...props} />;
+    if (isLoading) {
+      return (
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <Spin size="large" />
+        </div>
+      );
+    }
+
+    return isAuthenticated ? <WrappedComponent {...props} /> : null; 
   };
 
-  WithAuthComponent.displayName = `WithAuth(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
+  AuthenticatedComponent.displayName = `WithAuth(${WrappedComponent.displayName || WrappedComponent.name || 'Component'})`;
 
-  return WithAuthComponent;
+  return AuthenticatedComponent;
 };
 
 export default WithAuth;

@@ -1,4 +1,6 @@
 export type User = {
     userId: number;
-    hasInstance: boolean;
+    raSmorgasboardId: null | number;
+    sharedRaSmorgasboardId: null | number;
+    shared: boolean;
 }

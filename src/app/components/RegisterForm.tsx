@@ -1,10 +1,14 @@
 'use client'
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Form, Input, Button, Typography, Card, message } from 'antd';
 import { useRouter } from 'next/navigation';
 
+import Logo from '../favicon.ico';
+
 const { Title } = Typography;
+const { Text } = Typography;
 
 interface RegisterFormData {
   username: string;
@@ -51,9 +55,13 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className="login-container">
-      <Card className="login-card">
-        <Title level={2}>Register</Title>
+    <div className="login-container register-container">
+      <Card className="login-card" style={{ textAlign: 'center' }}>
+      <Image src={Logo} alt="logo" width={60} height={60} />
+        <Text strong style={{ display: 'block', fontSize: '20px', marginTop: 0 }}>
+          MatchMatrix
+        </Text>
+        <Title level={2} style={{ marginTop: '8px' }}>Register</Title>
         <Form onFinish={onFinish} layout="vertical">
           <Form.Item name="username" label="Username" rules={[{ required: true }]}>
             <Input />

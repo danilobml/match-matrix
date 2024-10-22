@@ -1,22 +1,12 @@
 'use client';
 
-import { Menu,
-  Dropdown,
-  Button,
-  Layout,
-  Typography 
-} from 'antd';
-import { 
-  DownOutlined,
-  LogoutOutlined,
-  MenuOutlined,
-  HomeOutlined,
-  UserOutlined,
-  BarChartOutlined
-} from '@ant-design/icons';
+import { Menu, Dropdown, Button, Layout, Typography } from 'antd';
+import { DownOutlined, LogoutOutlined, MenuOutlined, HomeOutlined, UserOutlined, BarChartOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 
 import Logo from '../favicon.ico';
 
@@ -25,9 +15,19 @@ const { Title } = Typography;
 
 const Navbar = () => {
   const router = useRouter();
+  const pathname = usePathname();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const user = sessionStorage.getItem('RAS_USER');
+      setIsLoggedIn(!!user);
+    }
+  }, [pathname]);
 
   const handleLogout = async () => {
     sessionStorage.removeItem('RAS_USER');
+    setIsLoggedIn(false);
     router.push('/login');
   };
 
@@ -58,12 +58,16 @@ const Navbar = () => {
           </Title>
         </Link>
       </div>
-      <Dropdown overlay={menu} trigger={['click']}>
-        <Button type="primary" className="menu-button">
-          <span className="menu-text">Menu <DownOutlined /></span>
-          <MenuOutlined className="menu-icon" />
-        </Button>
-      </Dropdown>
+      {isLoggedIn && (
+        <Dropdown overlay={menu} trigger={['click']}>
+          <Button type="primary" className="menu-button">
+            <span className="menu-text">
+              Menu <DownOutlined />
+            </span>
+            <MenuOutlined className="menu-icon" />
+          </Button>
+        </Dropdown>
+      )}
     </Header>
   );
 };

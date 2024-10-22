@@ -1,13 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Form, Input, Select, Button, Typography, Switch, Popconfirm, Modal, message } from 'antd';
+import { Form, Input, Select, Button, Typography, Switch, Popconfirm, Modal, message, Spin } from 'antd';
 
 import type { TransformedData, RAFormValues } from '../types/smorgasboard.types';
 import { RASmorgasboardOptions } from '../utils/constants';
-import { getCleanData } from '../utils/utils';
+import { getCleanData, getTransformedSavedToRAFormValues } from '../utils/utils';
 import RadarChartComponent from './RadarChartComponent';
 import TableChartComponent from './TableChartComponent';
+import { getParsedSessionUser } from '../utils/manageSessionUser';
+// Data hooks:
+import { useShareData } from '../hooks/useShareData';
+import InsightsComponent from './InsightsComponent';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -24,29 +28,28 @@ const RAForm: React.FC = () => {
     const [isShareModalVisible, setIsShareModalVisible] = useState(false);
     const [shareUserId, setShareUserId] = useState<number | null>(null);
     const [hasSavedData, setHasSavedData] = useState<boolean>(false);
-    const [isSaving, setIsSaving] = useState<boolean>(false); // Added loading state for save button
-    const [isSharing, setIsSharing] = useState<boolean>(false); // Added loading state for share button
+    const [isSaving, setIsSaving] = useState<boolean>(false);
 
     const [form] = Form.useForm();
+
+    const { shareData, isLoading: isSharing } = useShareData();
 
     const handleToggleChange = (checked: boolean) => {
         setIsSpecificRelationship(checked);
     };
 
     useEffect(() => {
-        const user = sessionStorage.getItem('RAS_USER');
-        if (user) {
             try {
-                const parsedUser = JSON.parse(user);
-                if (parsedUser?.userId) {
+                const parsedUser = getParsedSessionUser();
+                if (parsedUser?.raSmorgasboardId) {
                     const fetchData = async () => {
                         try {
                             const response = await fetch(`/api/raSmorgasboard?userId=${parsedUser.userId}`);
                             const result = await response.json();
                             if (result.data) {
-                                form.setFieldsValue(result.data);
+                                form.setFieldsValue(getTransformedSavedToRAFormValues(result.data));
                                 setHasSavedData(true);
-                                setShowSave(true); 
+                                setShowSave(true);
                             }
                         } catch (error) {
                             console.error('Failed to fetch preferences:', error);
@@ -62,9 +65,7 @@ const RAForm: React.FC = () => {
                 console.error('Failed to parse user session data:', e);
                 setLoading(false);
             }
-        } else {
-            setLoading(false);
-        }
+
     }, [form]);
 
     const getMissingFields = (values: RAFormValues) => {
@@ -90,7 +91,7 @@ const RAForm: React.FC = () => {
                 const allFieldsEmpty = Object.values(values).every(
                     (field) => field === undefined || field === null || field === '' || (typeof field === 'object' && Object.values(field).every(value => value === null || value === undefined))
                 );
-    
+
                 if (allFieldsEmpty) {
                     message.error('No data to chart!');
                     return;
@@ -98,7 +99,7 @@ const RAForm: React.FC = () => {
                 if (missing.length > 0) {
                     setGeneratePopVisible(true);
                 } else {
-                    generateHeatmap(values);
+                    generateCharts(values);
                     setShowSave(true);
                 }
             })
@@ -108,26 +109,16 @@ const RAForm: React.FC = () => {
     const handleSave = async () => {
         setIsSaving(true);
         form.validateFields().then(async (values) => {
-            const user = sessionStorage.getItem('RAS_USER');
-            if (!user) {
-                console.error('No user data available in session storage');
-                setIsSaving(false);
-                return;
-            }
-
-            const parsedUser = JSON.parse(user);
-            const { userId } = parsedUser;
-
+            const parsedUser = getParsedSessionUser();
+            const { userId } = parsedUser!;
             if (userId) {
                 const cleanData = getCleanData(values);
-
                 const payload = {
                     userId,
                     data: cleanData,
                     relationshipWithName: isSpecificRelationship ? values.relationshipWithName : 'Everyone',
                     relationshipWithId: isSpecificRelationship ? values.relationshipWithId || null : null,
                 };
-
                 try {
                     const response = await fetch('/api/raSmorgasboard', {
                         method: 'POST',
@@ -137,12 +128,15 @@ const RAForm: React.FC = () => {
                         body: JSON.stringify(payload),
                     });
                     if (!response.ok) {
-                        throw new Error('Failed to save preferences');
+                        throw new Error('Failed to save RA Smorgasboard data');
                     }
+                    const responseData = await response.json();
+                    sessionStorage.setItem('RAS_USER', JSON.stringify({...parsedUser, raSmorgasboardId: responseData.raSmorgasboardId}));
                     setHasSavedData(true);
-                    message.success('Preferences saved successfully!');
+                    message.success('RA Smorgasboard data saved successfully!');
                 } catch (error) {
-                    console.error('Failed to save preferences:', error);
+                    console.error('Failed to save RA Smorgasboard data:', error);
+                    message.error('Failed to save RA Smorgasboard data.')
                 } finally {
                     setIsSaving(false);
                 }
@@ -150,7 +144,7 @@ const RAForm: React.FC = () => {
         });
     };
 
-    const generateHeatmap = (values: RAFormValues) => {
+    const generateCharts = (values: RAFormValues) => {
         const transformedData: TransformedData[] = [];
         Object.entries(values).forEach(([section, items]) => {
             if (typeof items === 'object' && items !== null) {
@@ -190,7 +184,7 @@ const RAForm: React.FC = () => {
 
     const confirmGenerate = () => {
         const values = form.getFieldsValue();
-        generateHeatmap(values);
+        generateCharts(values);
         setGeneratePopVisible(false);
         setShowSave(true);
     };
@@ -200,31 +194,15 @@ const RAForm: React.FC = () => {
     };
 
     const handleShareSubmit = async () => {
-        setIsSharing(true);
-        if (!shareUserId) return;
-
-        try {
-            const response = await fetch('/api/share', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ raSmorgasboard: sessionStorage.getItem('userId'), userId: shareUserId }),
-            });
-
-            if (response.ok) {
-                message.success('You have successfully shared your data, contact your partner to tell them and ask them to share theirs, so you both can visualize it!');
-            } else {
-                message.error('Failed to share data.');
-            }
-        } catch {
-            message.error('An error occurred.');
-        } finally {
-            setIsSharing(false);
-            setIsShareModalVisible(false);
-        }
-    };
+        shareData(shareUserId!)
+    }
 
     if (loading) {
-        return <p>Loading...</p>;
+        return (
+            <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+              <Spin size="large" />
+            </div>
+          );
     }
 
     return (
@@ -287,7 +265,7 @@ const RAForm: React.FC = () => {
                             <p>Proceed anyway?</p>
                         </>
                     }
-                    visible={generatePopVisible}
+                    open={generatePopVisible}
                     onConfirm={confirmGenerate}
                     onCancel={() => setGeneratePopVisible(false)}
                 >
@@ -307,12 +285,12 @@ const RAForm: React.FC = () => {
                                 <p>Proceed anyway?</p>
                             </>
                         }
-                        visible={savePopVisible}
+                        open={savePopVisible}
                         onConfirm={confirmSave}
                         onCancel={() => setSavePopVisible(false)}
                     >
                         <Button type="primary" onClick={handleSaveClick} loading={isSaving} style={{ marginLeft: '10px' }}>
-                            Save Data
+                            {hasSavedData ? 'Update Data' : 'Save Data'}
                         </Button>
                     </Popconfirm>
                 )}
@@ -323,13 +301,14 @@ const RAForm: React.FC = () => {
                     </Button>
                 )}
 
-                <Modal title="Share your data" visible={isShareModalVisible} onOk={handleShareSubmit} onCancel={() => setIsShareModalVisible(false)}>
+                <Modal title="Share your data" open={isShareModalVisible} onOk={handleShareSubmit} onCancel={() => setIsShareModalVisible(false)}>
                     <Input value={shareUserId || ''} onChange={(e) => setShareUserId(Number(e.target.value))} placeholder="Insert User ID" />
                 </Modal>
             </Form>
 
-            {chartData.length > 0 && <TableChartComponent chartData={chartData} />}
-            {chartData.length > 0 && <RadarChartComponent chartData={chartData} />}
+            {chartData.length > 0 && <TableChartComponent chartData={chartData} person="you" />}
+            {chartData.length > 0 && <RadarChartComponent chartData={chartData} person="you" />}
+            {chartData.length > 0 && <InsightsComponent chartData={chartData} person="you" />}
         </div>
     );
 };
