@@ -97,7 +97,9 @@ const InsightsComponent = ({ chartData, person }: InsightsComponentProps) => {
     data: chartData,
     angleField: 'percentage',
     colorField: 'label',
-    radius: 0.7,
+    radius: 1,
+    responsive: true, // Ensures the chart is responsive
+    interactions: [{ type: 'element-active' }],
     label: {
         text: 'label',
         style: {
@@ -109,37 +111,37 @@ const InsightsComponent = ({ chartData, person }: InsightsComponentProps) => {
   return (
     <div>
       <Title level={3}>{person === 'you' ? 'Your Insights Visualization' : "Your Partner's Insights Visualization"}</Title>
-      <Row gutter={16}>
+      <Row gutter={[16, 16]} justify="center">
         {typeData.length > 0 && (
-          <Col span={8}>
+          <Col xs={24} md={12} xl={8}>
             <Title level={4}>Type</Title>
             <Pie {...config(typeData)} />
           </Col>
         )}
         {frequencyData.length > 0 && (
-          <Col span={8}>
+          <Col xs={24} md={12} xl={8}>
             <Title level={4}>Frequency</Title>
             <Pie {...config(frequencyData)} />
           </Col>
         )}
       </Row>
-      <Row gutter={16}>
+      <Row gutter={[16, 16]} justify="center">
         {engagementData.length > 0 && (
-          <Col span={8}>
+          <Col xs={24} md={12} xl={8}>
             <Title level={4}>Engagement</Title>
             <Pie {...config(engagementData)} />
           </Col>
         )}
         {hierarchyData.length > 0 && (
-          <Col span={8}>
+          <Col xs={24} md={12} xl={8}>
             <Title level={4}>Hierarchy</Title>
             <Pie {...config(hierarchyData)} />
           </Col>
         )}
       </Row>
-      <Row gutter={16}>
+      <Row gutter={[16, 16]} justify="center">
         {exclusivityData.length > 0 && (
-          <Col span={8}>
+          <Col xs={24} md={12} xl={8}>
             <Title level={4}>Exclusivity</Title>
             <Pie {...config(exclusivityData)} />
           </Col>

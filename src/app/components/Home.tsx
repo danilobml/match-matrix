@@ -10,15 +10,15 @@ const Home: React.FC = () => {
   const user = getParsedSessionUser();
 
   return (
-    <div style={{ padding: '15px 60px' }}>
+    <div style={{ padding: '15px 30px' }}>
       <Title>Relationship Anarchy Smorgasbord (Charted!)</Title>
 
       <Paragraph style={{ fontSize: '18px', textAlign: 'justify' }}>
-        The Smorgasbord has as its concept the idea that every relationship you have with another person is like a plate that the two of you are filling from this buffet of many options. It has blanks to fill in your own options in almost every category, because relationship anarchist philosophy allows for uniqueness of circumstances and no graphic could include everything, and the text with instructions suggests indicating whether certain categories and activities are &quot;Yes, Maybe, Maybe in the future, No,&quot; or color-coding your answers about whether or how often you want to include them in a given relationship. I&apos;ve never used this exact graphic in my own relationships (the latest version was created after my romantic relationship started) but the subjects listed are definitely some of the things that get brought up in discussing with play partners what a partnership looks like to us and what activities are involved - though there&apos;s a lot of &quot;jumping off&quot; from the relevant categories. I&apos;d suggest this as a tool, much like a Yes/No/Maybe list, for folks who want a place to start with these conversations.
+        The Smorgasbord represents relationships as a plate filled with various options from a buffet. It allows for customization in nearly every category, embracing relationship anarchist philosophy&apos;s flexibility. You can mark options as: 0 - No: Deal-breaker (something you really don&apos;t want in your connection), 1 - Not important, 2 - Somewhat important, 3 - Important, 4 - Very important, or 5 - Must-have (something essential for it to be a happy one for you).
       </Paragraph>
 
       <Paragraph style={{ fontSize: '18px', textAlign: 'justify' }}>
-        Some of the categories included in the RA Smorgasbord include Communication Frequency &amp; Method; Emotional Intimacy; Physical Intimacy; Public Displays of Affection; Romance; Domestic Routines; Power Exchange / Kink; and Partnership. Some sections that we don&apos;t think of in polyam circles very often but that get to the heart of this being an RA document intended for all relationships include Hierarchy/Power Differences (this category includes being Boss and Employee, or Mentor and Mentee); Collaboration; and the Labels section includes being Chosen Family and literal familial labels as well as colleagues and various possible romantic labels. The document notes &quot;remember you can&apos;t sneak anything into this without the other knowing or there will be conflict and disappointment later&quot; as well as that expectations and agreements can always be changed by mutual agreement. Like any tool it has limits and is mostly a good starting point for the discussions you really need to have about what you want a particular relationship to be. But it is a pretty good indicator of the flexibility of relationship anarchist philosophy to customized relationships, and a useful tool.
+        It covers areas like Communication Frequency, Emotional Intimacy, Physical Intimacy, Romance, Domestic Routines, Kink, and Partnership. It also includes unique categories like Hierarchy/Power Differences, Collaboration, and Labels such as Chosen Family or Partner. The document stresses that transparency is key to avoiding conflicts and that expectations can evolve with mutual consent. It&apos;s a flexible, useful tool for starting discussions on what you want a relationship to be.
       </Paragraph>
 
       <Button
@@ -35,20 +35,20 @@ const Home: React.FC = () => {
           type="primary"
           size="large"
           onClick={() => router.push('/share')}
-          style={{ marginTop: '20px', marginLeft: '10px' }}
-      >
-        Share your Data!
-      </Button>) : null}
+          style={{ marginTop: '20px', marginLeft: '10px', marginRight: '10px' }}
+        >
+          Share Data!
+        </Button>) : null}
 
       {user?.raSmorgasboardId ? (
         <Button
           type="primary"
           size="large"
           onClick={() => router.push('/charts')}
-          style={{ marginTop: '20px', marginLeft: '10px' }}
-      >
-        {user.sharedRaSmorgasboardId ? "Check out your shared charts!" : "Check out your charts!"}
-      </Button>) : null}
+          style={{ marginTop: '20px' }}
+        >
+          {user.sharedRaSmorgasboardId ? "Check out your shared charts!" : "Check out your charts!"}
+        </Button>) : null}
 
       <Title style={{ marginTop: 40 }}>More to come in V0.2.1:</Title>
       <Paragraph style={{ fontSize: '22px' }}>. More Charts;</Paragraph>

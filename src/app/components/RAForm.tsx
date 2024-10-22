@@ -39,32 +39,32 @@ const RAForm: React.FC = () => {
     };
 
     useEffect(() => {
-            try {
-                const parsedUser = getParsedSessionUser();
-                if (parsedUser?.raSmorgasboardId) {
-                    const fetchData = async () => {
-                        try {
-                            const response = await fetch(`/api/raSmorgasboard?userId=${parsedUser.userId}`);
-                            const result = await response.json();
-                            if (result.data) {
-                                form.setFieldsValue(getTransformedSavedToRAFormValues(result.data));
-                                setHasSavedData(true);
-                                setShowSave(true);
-                            }
-                        } catch (error) {
-                            console.error('Failed to fetch preferences:', error);
-                        } finally {
-                            setLoading(false);
+        try {
+            const parsedUser = getParsedSessionUser();
+            if (parsedUser?.raSmorgasboardId) {
+                const fetchData = async () => {
+                    try {
+                        const response = await fetch(`/api/raSmorgasboard?userId=${parsedUser.userId}`);
+                        const result = await response.json();
+                        if (result.data) {
+                            form.setFieldsValue(getTransformedSavedToRAFormValues(result.data));
+                            setHasSavedData(true);
+                            setShowSave(true);
                         }
-                    };
-                    fetchData();
-                } else {
-                    setLoading(false);
-                }
-            } catch (e) {
-                console.error('Failed to parse user session data:', e);
+                    } catch (error) {
+                        console.error('Failed to fetch preferences:', error);
+                    } finally {
+                        setLoading(false);
+                    }
+                };
+                fetchData();
+            } else {
                 setLoading(false);
             }
+        } catch (e) {
+            console.error('Failed to parse user session data:', e);
+            setLoading(false);
+        }
 
     }, [form]);
 
@@ -131,7 +131,7 @@ const RAForm: React.FC = () => {
                         throw new Error('Failed to save RA Smorgasboard data');
                     }
                     const responseData = await response.json();
-                    sessionStorage.setItem('RAS_USER', JSON.stringify({...parsedUser, raSmorgasboardId: responseData.raSmorgasboardId}));
+                    sessionStorage.setItem('RAS_USER', JSON.stringify({ ...parsedUser, raSmorgasboardId: responseData.raSmorgasboardId }));
                     setHasSavedData(true);
                     message.success('RA Smorgasboard data saved successfully!');
                 } catch (error) {
@@ -200,36 +200,36 @@ const RAForm: React.FC = () => {
     if (loading) {
         return (
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
-              <Spin size="large" />
+                <Spin size="large" />
             </div>
-          );
+        );
     }
 
     return (
-        <div style={{ padding: '10px 60px' }}>
+        <div style={{ padding: '15px 30px' }}>
             <Form form={form} layout="vertical">
                 <Title level={2} style={{ fontSize: '30px', marginBottom: '40px' }}>Relationship Anarchy Smorgasboard</Title>
 
-                <Form.Item label={<span style={{ fontSize: '16px' }}>For a specific relationship?</span>}>
+                <Form.Item label={<span style={{ fontSize: '16px' }}>For a specific connection?</span>}>
                     <Switch checked={isSpecificRelationship} onChange={handleToggleChange} />
                 </Form.Item>
 
                 <Form.Item
                     name="relationshipWithName"
-                    label={<span style={{ fontSize: '16px' }}>Relationship With: Name</span>}
-                    rules={[{ required: isSpecificRelationship, message: 'Please provide a relationship name if specific.' }]}
+                    label={<span style={{ fontSize: '16px' }}>With:</span>}
+                    rules={[{ required: isSpecificRelationship, message: 'Please provide a name.' }]}
                     style={{ width: '300px' }}
                 >
                     <Input disabled={!isSpecificRelationship} />
                 </Form.Item>
 
-                <Form.Item
+                {/* <Form.Item
                     name="relationshipWithId"
                     label={<span style={{ fontSize: '16px' }}>Relationship With: Id</span>}
                     style={{ width: '300px', marginBottom: '60px' }}
                 >
                     <Input disabled={!isSpecificRelationship} />
-                </Form.Item>
+                </Form.Item> */}
 
                 {Object.entries(RASmorgasboardOptions).map(([section, items]) => (
                     <Form.Item key={section} label={<span style={{ fontSize: '17px' }}>{section.replace(/([A-Z])/g, ' $1').toUpperCase()}</span>}>
@@ -289,15 +289,15 @@ const RAForm: React.FC = () => {
                         onConfirm={confirmSave}
                         onCancel={() => setSavePopVisible(false)}
                     >
-                        <Button type="primary" onClick={handleSaveClick} loading={isSaving} style={{ marginLeft: '10px' }}>
+                        <Button type="primary" onClick={handleSaveClick} loading={isSaving} style={{ marginLeft: '10px', marginRight: '10px' }}>
                             {hasSavedData ? 'Update Data' : 'Save Data'}
                         </Button>
                     </Popconfirm>
                 )}
 
                 {hasSavedData && (
-                    <Button type="primary" onClick={handleShareData} loading={isSharing} style={{ marginLeft: '10px' }}>
-                        Share your data?
+                    <Button type="primary" onClick={handleShareData} loading={isSharing} style={{ marginTop: '10px' }}>
+                        Share data?
                     </Button>
                 )}
 
