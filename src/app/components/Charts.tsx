@@ -64,7 +64,7 @@ const Charts: React.FC = () => {
   }, []);
 
   const handleFormNavigation = () => {
-    router.push('/form');
+    router.push('/raForm');
   };
 
   const handleShareNavigation = () => {

@@ -1,7 +1,7 @@
 'use client';
 
 import { Menu, Dropdown, Button, Layout, Typography } from 'antd';
-import { DownOutlined, LogoutOutlined, MenuOutlined, HomeOutlined, UserOutlined, BarChartOutlined } from '@ant-design/icons';
+import { DownOutlined, LogoutOutlined, MenuOutlined, HomeOutlined, UserOutlined, BarChartOutlined, FormOutlined } from '@ant-design/icons';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -35,6 +35,9 @@ const Navbar = () => {
     <Menu>
       <Menu.Item key="home" icon={<HomeOutlined />}>
         <Link href="/home">Home</Link>
+      </Menu.Item>
+      <Menu.Item key="forms" icon={<FormOutlined />}>
+        <Link href="/forms">Forms</Link>
       </Menu.Item>
       <Menu.Item key="share" icon={<UserOutlined />}>
         <Link href="/share">Share</Link>
