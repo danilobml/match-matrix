@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Pie } from '@ant-design/plots';
 import { Typography, Row, Col } from 'antd';
 import { TransformedData } from '../types/smorgasboard.types';
@@ -38,6 +38,21 @@ const filterDataByCategories = (
 };
 
 const InsightsComponent = ({ chartData, person }: InsightsComponentProps) => {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   const typeData = useMemo(
     () =>
       filterDataByCategories(chartData, {
@@ -97,8 +112,8 @@ const InsightsComponent = ({ chartData, person }: InsightsComponentProps) => {
     data: chartData,
     angleField: 'percentage',
     colorField: 'label',
-    radius: 1,
-    responsive: true, // Ensures the chart is responsive
+    radius: isMobile? 1 : 0.7,
+    responsive: true,
     interactions: [{ type: 'element-active' }],
     label: {
         text: 'label',

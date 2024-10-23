@@ -34,10 +34,14 @@ export const useShareData = () => {
             });
 
             if (response.ok) {
+                const responseData = await response.json()
+                const sharedSmorgasboardId = responseData.data.sharedRaSmorgasboardId
+                if (sharedSmorgasboardId) {
+                    message.success("You have successfully shared your data, you both can now visualize the charts at the 'Charts' page in the menu!");    
+                }
                 message.success('You have successfully shared your data, contact your partner to tell them and ask them to share theirs, so you both can visualize it!');
                 const user = getParsedSessionUser();
-                const responseData = await response.json()
-                const updatedUser = { ...user, shared: true, sharedRaSmorgasboardId: responseData.sharedRaSmorgasboardId || null }
+                const updatedUser = { ...user, shared: true, sharedRaSmorgasboardId: sharedSmorgasboardId || null }
                 sessionStorage.setItem('RAS_USER', JSON.stringify(updatedUser))
             } else if (response.status === 404) {
                 message.error('User with the given Id not found.');
