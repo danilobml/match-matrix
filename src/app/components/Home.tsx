@@ -55,7 +55,7 @@ const Home: React.FC = () => {
       <Paragraph style={{ fontSize: '22px' }}>. Attachment Styles Map;</Paragraph>
       <Paragraph style={{ fontSize: '22px' }}>. Love Languages Map;</Paragraph>
       <Paragraph style={{ fontSize: '22px' }}>. Kinky Map;</Paragraph>
-      <Paragraph style={{ fontSize: '22px' }}>. Notifications;</Paragraph>
+      <Paragraph style={{ fontSize: '22px' }}>. Notifications/Email-share;</Paragraph>
       <Paragraph style={{ fontSize: '22px' }}>. We&apos;re open to more ideas...</Paragraph>
     </div>
   );
