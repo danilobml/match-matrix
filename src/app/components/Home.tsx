@@ -24,7 +24,7 @@ const Home: React.FC = () => {
       <Button
         type="primary"
         size="large"
-        onClick={() => router.push('/form')}
+        onClick={() => router.push('/raForm')}
         style={{ marginTop: '20px' }}
       >
         Go to Form!
@@ -52,9 +52,9 @@ const Home: React.FC = () => {
 
       <Title style={{ marginTop: 40 }}>More to come in V0.2.1:</Title>
       <Paragraph style={{ fontSize: '22px' }}>. More Charts;</Paragraph>
-      <Paragraph style={{ fontSize: '22px' }}>. Attachment Styles Map;</Paragraph>
-      <Paragraph style={{ fontSize: '22px' }}>. Love Languages Map;</Paragraph>
-      <Paragraph style={{ fontSize: '22px' }}>. Kinky Map;</Paragraph>
+      <Paragraph style={{ fontSize: '22px' }}>. Attachment Styles Form;</Paragraph>
+      <Paragraph style={{ fontSize: '22px' }}>. Love Languages Form;</Paragraph>
+      <Paragraph style={{ fontSize: '22px' }}>. Kinky Form;</Paragraph>
       <Paragraph style={{ fontSize: '22px' }}>. Notifications/Email-share;</Paragraph>
       <Paragraph style={{ fontSize: '22px' }}>. We&apos;re open to more ideas...</Paragraph>
     </div>

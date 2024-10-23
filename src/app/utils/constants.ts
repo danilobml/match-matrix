@@ -1,3 +1,13 @@
+export interface ListOfFormsItem {
+    nameRef: string;
+    title: string;
+}
+
+export const listOfForms: ListOfFormsItem[] = [
+    {nameRef: 'raForm', title: 'Relationship Anarchy Smorgasboard'}
+]
+
+
 export interface RaSmorgasboardOptions {
   [key: string]: string[]
 }
